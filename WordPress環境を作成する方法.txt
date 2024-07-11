@@ -1,0 +1,51 @@
+■WordPress環境を作成する方法
+
+docker-compose.ymlに下記を記述
+userとpassは適宜変更
+
+```
+version: '3'
+
+services:
+  wordpress:
+    image: wordpress:latest
+    volumes:
+      - ./wp:/var/www/html # マウントするディレクトリを指定
+    ports:
+      - "8000:80"
+    restart: always
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpress
+      WORDPRESS_DB_PASSWORD: wordpress
+
+  db:
+    image: mysql:5.7
+    volumes:
+      - db:/var/lib/mysql
+    ports:
+      - "3306:3306"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: somewordpress
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpress
+      MYSQL_PASSWORD: wordpress
+
+  phpmyadmin:
+      image: phpmyadmin/phpmyadmin:latest 
+      restart: always 
+      depends_on: 
+        - db 
+      ports: 
+        - "8888:80" #ポート番号は自由に設定していいがこだわりがないならこの番号でいい
+
+volumes:
+    wordpress:
+    db:
+```
+
+記述したらコマンドを実行
+```
+$ docker-compose up -d
+```
